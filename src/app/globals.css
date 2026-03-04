@@ -1,0 +1,179 @@
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans transition-colors duration-300;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-wide;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary-dark transition-all duration-300 shadow-md hover:shadow-lg active:scale-95;
+  }
+
+  .card-anime {
+    @apply bg-white dark:bg-dark-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-primary;
+  }
+}
+
+/* ─── Light theme (default) ─── */
+:root {
+  /* Legacy vars kept for backward-compat */
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Semantic design tokens */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f9fafb; /* gray-50  */
+  --color-card: #ffffff;
+  --color-border: #e5e7eb; /* gray-200 */
+  --color-input-bg: #ffffff;
+  --color-input-border: #d1d5db; /* gray-300 */
+  --color-text: #111827; /* gray-900 */
+  --color-text-secondary: #4b5563; /* gray-600 */
+  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-scrollbar-track: #f1f5f9;
+  --color-scrollbar-thumb: #94a3b8;
+  --color-scrollbar-thumb-hover: #64748b;
+}
+
+/* ─── Dark theme ─── */
+/* Applied by the .dark class (ThemeProvider) OR when the OS prefers dark
+   and the user hasn't saved a manual preference yet.  The anti-flash script
+   in layout.tsx adds the .dark class before first paint, so users on a dark-
+   mode PC never see a white flash. */
+@media (prefers-color-scheme: dark) {
+  :root:not([class~="light"]) {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --color-bg: #0a0a0a;
+    --color-bg-secondary: #111111;
+    --color-card: #1a1a1a;
+    --color-border: #374151; /* gray-700 */
+    --color-input-bg: #374151;
+    --color-input-border: #4b5563; /* gray-600 */
+    --color-text: #f9fafb; /* gray-50  */
+    --color-text-secondary: #9ca3af; /* gray-400 */
+    --color-text-muted: #6b7280; /* gray-500 */
+    --color-scrollbar-track: #0a0a0a;
+    --color-scrollbar-thumb: #4b5563;
+    --color-scrollbar-thumb-hover: #6b7280;
+  }
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --color-bg: #0a0a0a;
+  --color-bg-secondary: #111111;
+  --color-card: #1a1a1a;
+  --color-border: #374151;
+  --color-input-bg: #374151;
+  --color-input-border: #4b5563;
+  --color-text: #f9fafb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-scrollbar-track: #0a0a0a;
+  --color-scrollbar-thumb: #4b5563;
+  --color-scrollbar-thumb-hover: #6b7280;
+}
+
+/* ─── Global smooth color transitions ─── */
+/* Applied to html/body so switching themes feels seamless.          */
+/* Individual components can override duration with Tailwind classes. */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  transition:
+    background-color 300ms ease,
+    color 300ms ease;
+}
+
+/*
+  Make every element inherit smooth color / background transitions so that
+  toggling dark mode feels polished throughout the whole page.
+  We deliberately avoid 'transition: all' to keep GPU usage minimal.
+*/
+*,
+*::before,
+*::after {
+  transition-property:
+    color, background-color, border-color, outline-color, text-decoration-color,
+    fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Restore snappy hover/focus/active on interactive elements */
+a,
+button,
+[role="button"],
+select,
+input,
+textarea {
+  transition-duration: 150ms;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ─── Custom scrollbar ─── */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb-hover);
+}
+
+/* Firefox */
+* {
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
