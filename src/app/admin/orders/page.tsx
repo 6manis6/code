@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiTrash2 } from "react-icons/fi";
 
 const STATUS_OPTIONS = ["pending", "processing", "completed", "cancelled"];
 
@@ -49,6 +49,17 @@ export default function AdminOrders() {
       fetchOrders();
     } catch {
       toast.error("Failed to update order status");
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm("Delete this order? This cannot be undone.")) return;
+    try {
+      await axios.delete(`/api/orders/${id}`);
+      toast.success("Order deleted");
+      setOrders((prev) => prev.filter((o) => o._id !== id));
+    } catch {
+      toast.error("Failed to delete order");
     }
   };
 
@@ -105,6 +116,13 @@ export default function AdminOrders() {
 
                 {/* Status + amount */}
                 <div className="flex flex-col items-end gap-2">
+                  <button
+                    onClick={() => handleDeleteOrder(order._id)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    title="Delete order"
+                  >
+                    <FiTrash2 className="w-4 h-4" />
+                  </button>
                   <p className="text-xl font-bold text-primary">
                     NPR {order.totalAmount}
                   </p>

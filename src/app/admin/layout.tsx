@@ -9,12 +9,14 @@ import {
   FiImage,
   FiPlus,
   FiLogOut,
+  FiMail,
 } from "react-icons/fi";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: FiHome },
   { href: "/admin/products", label: "Products", icon: FiPackage },
   { href: "/admin/orders", label: "Orders", icon: FiShoppingCart },
+  { href: "/admin/messages", label: "Messages", icon: FiMail },
   { href: "/admin/banner", label: "Banner", icon: FiImage },
   { href: "/admin/add-product", label: "Add Product", icon: FiPlus },
 ];
