@@ -91,6 +91,16 @@ function CollectionsContent() {
           >
             Accessories
           </button>
+          <button
+            onClick={() => handleCategoryChange("game")}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+              selectedCategory === "game"
+                ? "bg-primary text-white"
+                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+            }`}
+          >
+            Games
+          </button>
         </div>
 
         {/* Products Grid */}

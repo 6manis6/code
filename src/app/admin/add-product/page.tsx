@@ -171,6 +171,7 @@ export default function AddProduct() {
               <option value="figures">Figures</option>
               <option value="clothing">Clothing</option>
               <option value="accessories">Accessories</option>
+              <option value="game">Games</option>
             </select>
           </div>
 

@@ -6,7 +6,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
-import { FiPlay, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import {
+  FiPlay,
+  FiChevronLeft,
+  FiChevronRight,
+  FiSearch,
+} from "react-icons/fi";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +39,10 @@ const DEFAULT_SLIDE: BannerSlide = {
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchCategory, setSearchCategory] = useState("");
   const [bannerSlides, setBannerSlides] = useState<BannerSlide[]>([
     DEFAULT_SLIDE,
   ]);
@@ -100,6 +108,7 @@ export default function Home() {
       const res = await axios.get("/api/products");
       const products = res.data.data;
 
+      setAllProducts(products);
       setFeaturedProducts(
         products.filter((p: Product) => p.featured).slice(0, 6),
       );
@@ -111,8 +120,35 @@ export default function Home() {
     }
   };
 
+  const isSearching = searchQuery.trim() !== "" || searchCategory !== "";
+  const searchResults = allProducts.filter((p) => {
+    const matchQuery =
+      !searchQuery.trim() ||
+      p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchCat = !searchCategory || p.category === searchCategory;
+    return matchQuery && matchCat;
+  });
+
+  const SEARCH_CATEGORIES = [
+    { value: "", label: "All" },
+    { value: "figures", label: "Figures" },
+    { value: "clothing", label: "Clothing" },
+    { value: "accessories", label: "Accessories" },
+    { value: "game", label: "Games" },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Background watermark */}
+      <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/kc.gif"
+          alt=""
+          className="w-[480px] opacity-100 blur-[3px] select-none"
+        />
+      </div>
+
       <Header />
 
       <main className="flex-grow">
@@ -216,8 +252,68 @@ export default function Home() {
           )}
         </section>
 
+        {/* Search Bar */}
+        <section className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-lg p-6 space-y-4">
+            <div className="relative">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products…"
+                className="w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white text-base"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {SEARCH_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() =>
+                    setSearchCategory((prev) =>
+                      prev === cat.value ? "" : cat.value,
+                    )
+                  }
+                  className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+                    searchCategory === cat.value
+                      ? "bg-primary text-white"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Search Results */}
+        {isSearching && (
+          <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+            <h2 className="text-2xl font-bold dark:text-white mb-6">
+              Search Results{" "}
+              <span className="text-gray-400 text-lg font-normal">
+                ({searchResults.length} found)
+              </span>
+            </h2>
+            {searchResults.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-12">
+                No products match your search.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {searchResults.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Featured Categories */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section
+          className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 ${isSearching ? "hidden" : ""}`}
+        >
           <h2 className="text-3xl font-display font-bold text-center mb-4 dark:text-white tracking-widest">
             FEATURED <span className="text-primary">CATEGORIES</span>
           </h2>
@@ -269,11 +365,29 @@ export default function Home() {
                 </div>
               </div>
             </Link>
+
+            <Link href="/collections?category=game">
+              <div className="relative h-64 rounded-lg overflow-hidden group cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 group-hover:opacity-75 transition-opacity"></div>
+                <img
+                  src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=500"
+                  alt="Games"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-white text-2xl font-display tracking-widest">
+                    GAMES
+                  </h3>
+                </div>
+              </div>
+            </Link>
           </div>
         </section>
 
         {/* New Arrivals */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gray-50 dark:bg-transparent">
+        <section
+          className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 ${isSearching ? "hidden" : ""}`}
+        >
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-display font-bold dark:text-white tracking-widest">
               NEW <span className="text-primary">ARRIVALS</span>
@@ -308,8 +422,8 @@ export default function Home() {
         </section>
 
         {/* Most Viewed Products */}
-        {featuredProducts.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {featuredProducts.length > 0 && !isSearching && (
+          <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-3xl font-display font-bold dark:text-white tracking-widest">
                 MOST VIEWED <span className="text-primary">PRODUCTS</span>

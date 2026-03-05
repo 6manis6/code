@@ -14,7 +14,7 @@ import {
   FiUpload,
 } from "react-icons/fi";
 
-const CATEGORIES = ["figures", "clothing", "accessories"];
+const CATEGORIES = ["figures", "clothing", "accessories", "game"];
 
 type Product = {
   _id: string;
