@@ -58,10 +58,10 @@ function CartContent() {
         `*Items:*`,
         ...cart.map(
           (item) =>
-            `- ${item.product.name} x ${item.quantity} - NPR ${(item.product.price * item.quantity).toFixed(2)}`,
+            `- ${item.product.name} x ${item.quantity} - NPR ${(item.product.price * item.quantity).toLocaleString('en-IN')}`,
         ),
         ``,
-        `*Total: NPR ${getTotalPrice().toFixed(2)}*`,
+        `*Total: NPR ${getTotalPrice().toLocaleString('en-IN')}*`,
         ``,
         `Please confirm my order. Thank you!`,
       ];
@@ -122,7 +122,7 @@ function CartContent() {
                       {item.product.name}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                      NPR {item.product.price.toFixed(2)}
+                      NPR {item.product.price.toLocaleString('en-IN')}
                     </p>
                     <div className="flex items-center gap-3">
                       <button
@@ -154,7 +154,7 @@ function CartContent() {
                       <FiTrash2 />
                     </button>
                     <p className="text-xl font-bold text-primary">
-                      NPR {(item.product.price * item.quantity).toFixed(2)}
+                      NPR {(item.product.price * item.quantity).toLocaleString('en-IN')}
                     </p>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ function CartContent() {
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between dark:text-gray-300">
                     <span>Subtotal</span>
-                    <span>NPR {getTotalPrice().toFixed(2)}</span>
+                    <span>NPR {getTotalPrice().toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between dark:text-gray-300">
                     <span>Shipping</span>
@@ -180,7 +180,7 @@ function CartContent() {
                     <div className="flex justify-between text-xl font-bold dark:text-white">
                       <span>Total</span>
                       <span className="text-primary">
-                        NPR {getTotalPrice().toFixed(2)}
+                        NPR {getTotalPrice().toLocaleString('en-IN')}
                       </span>
                     </div>
                   </div>
