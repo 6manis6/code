@@ -50,7 +50,7 @@ export default function AdminLayout({
             <img src="/kc.gif" alt="KC" className="h-10 w-10 object-contain" />
             <div>
               <p className="font-display tracking-widest text-primary text-sm font-bold leading-tight">
-                KURUMA
+                KURAMA
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 tracking-wider">
                 ADMIN PANEL

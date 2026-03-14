@@ -1,4 +1,4 @@
-# Kuruma Collectibles - Anime Merchandise E-Commerce Store
+# Kurama Collectibles - Anime Merchandise E-Commerce Store
 
 A full-stack e-commerce website built with Next.js 14, MongoDB Atlas, and Tailwind CSS for selling anime merchandise including figures, clothing, and accessories.
 
@@ -43,7 +43,7 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   cd kuruma
+   cd kurama
    ```
 
 2. **Install dependencies**
@@ -58,7 +58,7 @@ Before you begin, ensure you have the following installed:
 
    ```env
    # MongoDB Atlas Connection String
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/kuruma?retryWrites=true&w=majority
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/kurama?retryWrites=true&w=majority
 
    # ImgBB API Key (Get from https://api.imgbb.com/)
    IMGBB_API_KEY=your_imgbb_api_key_here
@@ -74,7 +74,7 @@ Before you begin, ensure you have the following installed:
 
 4. **Configure MongoDB Atlas**
    - Create a new cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-   - Create a database named `kuruma`
+   - Create a database named `kurama`
    - Get your connection string and add it to `.env.local`
    - Whitelist your IP address or allow access from anywhere (0.0.0.0/0)
 
@@ -124,7 +124,7 @@ Before you begin, ensure you have the following installed:
 ## Project Structure
 
 ```
-kuruma/
+kurama/
 ├── src/
 │   ├── app/
 │   │   ├── admin/              # Admin pages
@@ -286,7 +286,7 @@ This project is open source and available under the MIT License.
 
 ## Support
 
-For issues or questions, please open an issue on GitHub or contact support@kuruma.com
+For issues or questions, please open an issue on GitHub or contact support@kurama.com
 
 ---
 

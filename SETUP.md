@@ -1,6 +1,6 @@
 # Quick Setup Guide
 
-Follow these steps to get your Kuruma Collectibles store up and running:
+Follow these steps to get your Kurama Collectibles store up and running:
 
 ## Step 1: MongoDB Atlas Setup
 
@@ -11,9 +11,9 @@ Follow these steps to get your Kuruma Collectibles store up and running:
 5. Choose "Connect your application"
 6. Copy the connection string (looks like: `mongodb+srv://username:password@cluster.mongodb.net/`)
 7. Replace `<password>` with your database password
-8. Add `/kuruma` after `.net/` and before the `?`
+8. Add `/kurama` after `.net/` and before the `?`
 
-Example: `mongodb+srv://user:pass123@cluster0.xxxxx.mongodb.net/kuruma?retryWrites=true&w=majority`
+Example: `mongodb+srv://user:pass123@cluster0.xxxxx.mongodb.net/kurama?retryWrites=true&w=majority`
 
 ## Step 2: ImgBB API Key
 

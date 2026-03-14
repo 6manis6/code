@@ -22,7 +22,7 @@ export default function Header() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/kc.gif"
-                alt="Kuruma Collectibles"
+                alt="Kurama Collectibles"
                 className="h-full w-full object-contain"
               />
             </div>

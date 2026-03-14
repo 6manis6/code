@@ -92,7 +92,7 @@ export default function AdminMessages() {
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <a
-                    href={`mailto:${msg.email}?subject=Re: Your message to Kuruma Anime Shop`}
+                    href={`mailto:${msg.email}?subject=Re: Your message to Kurama Anime Shop`}
                     className="text-sm bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary-dark transition-colors"
                   >
                     Reply
