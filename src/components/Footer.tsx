@@ -5,7 +5,7 @@ import { FaYoutube, FaInstagram, FaFacebook } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-950 border-t border-gray-800 pt-12 pb-6 mt-auto">
+    <footer className="relative z-10 bg-gray-950 border-t border-gray-800 pt-12 pb-6 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -13,14 +13,11 @@ export default function Footer() {
             <Link href="/" onClick={() => window.scrollTo(0, 0)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/kc.gif"
+                src="/kc.png"
                 alt="Kuruma Collectibles"
-                className="h-32 w-auto mb-4 object-contain hover:scale-105 transition-transform duration-300"
+                className="h-32 w-32 rounded-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </Link>
-            <p className="text-gray-400 text-sm text-center md:text-left">
-              Your one-stop shop for premium anime merchandise in Nepal.
-            </p>
           </div>
 
           {/* Shop Links */}

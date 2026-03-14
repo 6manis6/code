@@ -143,9 +143,9 @@ export default function Home() {
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/kc.gif"
+          src="/kc.png"
           alt=""
-          className="w-[480px] opacity-100 blur-[3px] select-none"
+          className="w-[480px] rounded-full opacity-100 blur-[3px] select-none"
         />
       </div>
 

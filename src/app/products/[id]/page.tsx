@@ -9,7 +9,14 @@ import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { useCart } from "@/contexts/CartContext";
 import toast from "react-hot-toast";
-import { FiShoppingCart, FiChevronLeft, FiMinus, FiPlus, FiHeart, FiShare2 } from "react-icons/fi";
+import {
+  FiShoppingCart,
+  FiChevronLeft,
+  FiMinus,
+  FiPlus,
+  FiHeart,
+  FiShare2,
+} from "react-icons/fi";
 import Link from "next/link";
 
 export default function ProductDetailPage() {
@@ -92,18 +99,25 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg">
       <Header />
-      
+
       <main className="flex-grow">
         {/* Breadcrumbs */}
         <div className="container mx-auto px-4 py-6">
           <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-8">
-            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+            <Link href="/" className="hover:text-primary transition-colors">
+              Home
+            </Link>
             <span className="mx-2">/</span>
-            <Link href={`/collections?category=${product.category}`} className="capitalize hover:text-primary transition-colors">
+            <Link
+              href={`/collections?category=${product.category}`}
+              className="capitalize hover:text-primary transition-colors"
+            >
               {product.category}
             </Link>
             <span className="mx-2">/</span>
-            <span className="text-gray-900 dark:text-white font-medium truncate">{product.name}</span>
+            <span className="text-gray-900 dark:text-white font-medium truncate">
+              {product.name}
+            </span>
           </nav>
 
           <div className="flex flex-col md:flex-row gap-12 lg:gap-20">
@@ -117,7 +131,9 @@ export default function ProductDetailPage() {
                 />
                 {product.stock === 0 && (
                   <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-                    <span className="text-white text-3xl font-bold tracking-widest uppercase">Out of Stock</span>
+                    <span className="text-white text-3xl font-bold tracking-widest uppercase">
+                      Out of Stock
+                    </span>
                   </div>
                 )}
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
@@ -138,27 +154,28 @@ export default function ProductDetailPage() {
                   {product.category}
                 </span>
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4 dark:text-white leading-tight">
                 {product.name}
               </h1>
 
               <div className="flex items-center gap-4 mb-6">
-                <div className="flex text-yellow-400">
-                  {"★".repeat(5)}
-                </div>
-                <span className="text-gray-500 dark:text-gray-400 text-sm">(4.8 Out of 5.0)</span>
-                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                <span className={`text-sm font-semibold ${product.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+                <span
+                  className={`text-sm font-semibold ${product.stock > 0 ? "text-green-500" : "text-red-500"}`}
+                >
+                  {product.stock > 0
+                    ? `In Stock (${product.stock} available)`
+                    : "Out of Stock"}
                 </span>
               </div>
 
               <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
                 <div className="text-3xl lg:text-4xl font-bold text-primary mb-2">
-                  NPR {product.price.toLocaleString('en-IN')}
+                  NPR {product.price.toLocaleString("en-IN")}
                 </div>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Including VAT & Taxes</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Including VAT & Taxes
+                </p>
               </div>
 
               <div className="prose dark:prose-invert max-w-none mb-8">
@@ -173,15 +190,19 @@ export default function ProductDetailPage() {
                 {product.stock > 0 && (
                   <div className="flex items-center gap-6">
                     <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
-                      <button 
+                      <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                         className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                       >
                         <FiMinus />
                       </button>
-                      <span className="w-12 text-center font-bold dark:text-white">{quantity}</span>
-                      <button 
-                        onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                      <span className="w-12 text-center font-bold dark:text-white">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setQuantity(Math.min(product.stock, quantity + 1))
+                        }
                         className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                       >
                         <FiPlus />
@@ -236,7 +257,10 @@ export default function ProductDetailPage() {
                 <h2 className="text-3xl font-display font-bold dark:text-white tracking-widest">
                   YOU MAY ALSO <span className="text-primary">LIKE</span>
                 </h2>
-                <Link href="/collections" className="text-primary hover:text-primary-dark font-semibold">
+                <Link
+                  href="/collections"
+                  className="text-primary hover:text-primary-dark font-semibold"
+                >
                   View More →
                 </Link>
               </div>
