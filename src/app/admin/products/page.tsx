@@ -21,6 +21,7 @@ type Product = {
   name: string;
   description: string;
   price: number;
+  originalPrice: number;
   category: string;
   image: string;
   stock: number;
@@ -30,7 +31,8 @@ type Product = {
 type EditForm = {
   name: string;
   description: string;
-  price: string;
+  currentPrice: string;
+  originalPrice: string;
   category: string;
   stock: string;
   featured: boolean;
@@ -45,7 +47,8 @@ export default function AdminProducts() {
   const [editForm, setEditForm] = useState<EditForm>({
     name: "",
     description: "",
-    price: "",
+    currentPrice: "",
+    originalPrice: "",
     category: "figures",
     stock: "",
     featured: false,
@@ -54,6 +57,32 @@ export default function AdminProducts() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const editOriginalPrice = Number(editForm.originalPrice) || 0;
+  const editCurrentPrice = Number(editForm.currentPrice) || 0;
+  const editDiscountPercent =
+    editOriginalPrice > 0
+      ? Math.max(
+          0,
+          Math.min(
+            100,
+            Math.round(
+              ((editOriginalPrice - editCurrentPrice) / editOriginalPrice) * 100,
+            ),
+          ),
+        )
+      : 0;
+
+  const preventWheelChange = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.currentTarget.blur();
+  };
+
+  const preventArrowStep = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+    }
+  };
 
   useEffect(() => {
     if (!localStorage.getItem("adminAuth")) {
@@ -86,11 +115,14 @@ export default function AdminProducts() {
   };
 
   const openEdit = (product: Product) => {
+    const originalPrice = product.originalPrice || product.price;
+
     setEditProduct(product);
     setEditForm({
       name: product.name,
       description: product.description,
-      price: String(product.price),
+      currentPrice: String(product.price),
+      originalPrice: String(originalPrice),
       category: product.category,
       stock: String(product.stock),
       featured: product.featured,
@@ -126,6 +158,12 @@ export default function AdminProducts() {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editProduct) return;
+
+    if (editCurrentPrice >= editOriginalPrice) {
+      toast.error("Current price must be lower than original price");
+      return;
+    }
+
     setSaving(true);
     try {
       let imageUrl = editForm.image;
@@ -141,7 +179,8 @@ export default function AdminProducts() {
       await axios.put(`/api/products/${editProduct._id}`, {
         name: editForm.name,
         description: editForm.description,
-        price: Number(editForm.price),
+        price: Number(editForm.currentPrice),
+        originalPrice: Number(editForm.originalPrice),
         category: editForm.category,
         stock: Number(editForm.stock),
         featured: editForm.featured,
@@ -168,13 +207,13 @@ export default function AdminProducts() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-display tracking-widest font-bold dark:text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-display tracking-widest font-bold dark:text-white">
           PRODUCTS
         </h1>
         <Link
           href="/admin/add-product"
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary inline-flex w-full sm:w-auto justify-center items-center gap-2"
         >
           <FiPlus /> Add Product
         </Link>
@@ -194,61 +233,42 @@ export default function AdminProducts() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white dark:bg-dark-card rounded-xl shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    Featured
-                  </th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {products.map((product) => (
-                  <tr
-                    key={product._id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        {product.image && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="h-10 w-10 rounded-lg object-cover flex-shrink-0"
-                          />
-                        )}
-                        <span className="font-medium dark:text-white">
-                          {product.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 capitalize text-gray-600 dark:text-gray-300">
+        <>
+          <div className="md:hidden space-y-3">
+            {products.map((product) => (
+              <div
+                key={product._id}
+                className="bg-white dark:bg-dark-card rounded-xl shadow p-4"
+              >
+                <div className="flex items-start gap-3">
+                  {product.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="h-14 w-14 rounded-lg object-cover flex-shrink-0"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold dark:text-white truncate">
+                      {product.name}
+                    </p>
+                    <p className="text-xs capitalize text-gray-500 dark:text-gray-400 mt-0.5">
                       {product.category}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300 font-medium">
-                      NPR {product.price}
-                    </td>
-                    <td className="px-6 py-4">
+                    </p>
+                    <div className="mt-1">
+                      <span className="font-semibold text-primary">
+                        NPR {product.price.toLocaleString("en-IN")}
+                      </span>
+                      {product.originalPrice > product.price && (
+                        <span className="ml-2 text-xs line-through text-gray-500 dark:text-gray-400">
+                          NPR {product.originalPrice.toLocaleString("en-IN")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
                           product.stock === 0
                             ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                             : product.stock <= 5
@@ -260,45 +280,148 @@ export default function AdminProducts() {
                           ? "Out of Stock"
                           : `${product.stock} left`}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {product.featured ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      {product.featured && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary/10 text-primary">
                           Featured
                         </span>
-                      ) : (
-                        <span className="text-gray-400 text-sm">—</span>
                       )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => openEdit(product)}
-                          className="flex items-center gap-1.5 text-primary hover:text-primary-dark text-sm font-medium transition-colors"
-                        >
-                          <FiEdit2 className="w-4 h-4" /> Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product._id)}
-                          className="flex items-center gap-1.5 text-red-500 hover:text-red-700 text-sm font-medium transition-colors"
-                        >
-                          <FiTrash2 className="w-4 h-4" /> Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-4">
+                  <button
+                    onClick={() => openEdit(product)}
+                    className="flex-1 flex items-center justify-center gap-1.5 text-primary border border-primary/30 rounded-lg py-2 text-sm font-medium"
+                  >
+                    <FiEdit2 className="w-4 h-4" /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    className="flex-1 flex items-center justify-center gap-1.5 text-red-500 border border-red-200 dark:border-red-900/40 rounded-lg py-2 text-sm font-medium"
+                  >
+                    <FiTrash2 className="w-4 h-4" /> Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          <div className="hidden md:block bg-white dark:bg-dark-card rounded-xl shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                      Stock
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                      Featured
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {products.map((product) => (
+                    <tr
+                      key={product._id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          {product.image && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="h-10 w-10 rounded-lg object-cover flex-shrink-0"
+                            />
+                          )}
+                          <span className="font-medium dark:text-white">
+                            {product.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 capitalize text-gray-600 dark:text-gray-300">
+                        {product.category}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300 font-medium">
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-primary">
+                            NPR {product.price.toLocaleString("en-IN")}
+                          </span>
+                          {product.originalPrice > product.price && (
+                            <span className="text-xs line-through text-gray-500 dark:text-gray-400">
+                              NPR{" "}
+                              {product.originalPrice.toLocaleString("en-IN")}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            product.stock === 0
+                              ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                              : product.stock <= 5
+                                ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          }`}
+                        >
+                          {product.stock === 0
+                            ? "Out of Stock"
+                            : `${product.stock} left`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {product.featured ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                            Featured
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-sm">—</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => openEdit(product)}
+                            className="flex items-center gap-1.5 text-primary hover:text-primary-dark text-sm font-medium transition-colors"
+                          >
+                            <FiEdit2 className="w-4 h-4" /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product._id)}
+                            className="flex items-center gap-1.5 text-red-500 hover:text-red-700 text-sm font-medium transition-colors"
+                          >
+                            <FiTrash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
       {/* ── Edit Modal ── */}
       {editProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
+          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b dark:border-gray-700">
               <h2 className="text-xl font-bold dark:text-white">
                 Edit Product
               </h2>
@@ -310,7 +433,7 @@ export default function AdminProducts() {
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleEditSubmit} className="p-4 sm:p-6 space-y-4">
               {/* Image */}
               <div>
                 <label className="block text-sm font-medium mb-2 dark:text-gray-300">
@@ -368,18 +491,21 @@ export default function AdminProducts() {
                 />
               </div>
 
-              {/* Price + Stock */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Original Price + Stock */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                    Price (NPR)
+                    Original Price (NPR)
                   </label>
                   <input
                     type="number"
-                    name="price"
-                    value={editForm.price}
+                    name="originalPrice"
+                    value={editForm.originalPrice}
                     onChange={handleEditChange}
                     min={0}
+                    step="0.01"
+                    onWheel={preventWheelChange}
+                    onKeyDown={preventArrowStep}
                     required
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
@@ -394,9 +520,48 @@ export default function AdminProducts() {
                     value={editForm.stock}
                     onChange={handleEditChange}
                     min={0}
+                    onWheel={preventWheelChange}
+                    onKeyDown={preventArrowStep}
                     required
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
+                </div>
+              </div>
+
+              {/* Current Price */}
+              <div>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                  Current Price (NPR)
+                </label>
+                <input
+                  type="number"
+                  name="currentPrice"
+                  value={editForm.currentPrice}
+                  onChange={handleEditChange}
+                  min={0}
+                  step="0.01"
+                  onWheel={preventWheelChange}
+                  onKeyDown={preventArrowStep}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  required
+                />
+                <div className="mt-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-800/50">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Price Preview
+                  </p>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-2xl font-bold text-primary">
+                      NPR {editCurrentPrice.toLocaleString("en-IN")}
+                    </span>
+                    {editOriginalPrice > editCurrentPrice && (
+                      <span className="text-sm line-through text-gray-500 dark:text-gray-400">
+                        NPR {editOriginalPrice.toLocaleString("en-IN")}
+                      </span>
+                    )}
+                    <span className="text-sm font-semibold text-primary">
+                      {editDiscountPercent}% OFF
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -438,7 +603,7 @@ export default function AdminProducts() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeEdit}

@@ -10,7 +10,10 @@ import {
   FiPlus,
   FiLogOut,
   FiMail,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
+import { useState } from "react";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: FiHome },
@@ -28,6 +31,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Login page — render bare (no sidebar)
   if (pathname === "/admin") {
@@ -36,15 +40,62 @@ export default function AdminLayout({
 
   const handleLogout = () => {
     localStorage.removeItem("adminAuth");
+    setMobileNavOpen(false);
     router.push("/admin");
   };
 
+  const handleNavClick = () => {
+    setMobileNavOpen(false);
+  };
+
   return (
-    <div className="min-h-screen flex bg-gray-100 dark:bg-dark-bg">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-dark-card shadow-lg flex flex-col flex-shrink-0">
+    <div className="min-h-screen bg-gray-100 dark:bg-dark-bg md:flex">
+      {/* Mobile top bar */}
+      <header className="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-dark-card/95 backdrop-blur border-b dark:border-gray-700">
+        <div className="flex items-center justify-between px-4 py-3">
+          <Link href="/admin/dashboard" className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/kc.gif" alt="KC" className="h-8 w-8 object-contain" />
+            <div>
+              <p className="font-display tracking-widest text-primary text-xs font-bold leading-tight">
+                KURAMA
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 tracking-wider">
+                ADMIN PANEL
+              </p>
+            </div>
+          </Link>
+          <button
+            onClick={() => setMobileNavOpen((prev) => !prev)}
+            className="p-2 rounded-lg border dark:border-gray-700 dark:text-gray-200"
+            aria-label="Toggle navigation"
+          >
+            {mobileNavOpen ? (
+              <FiX className="w-5 h-5" />
+            ) : (
+              <FiMenu className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile drawer backdrop */}
+      {mobileNavOpen && (
+        <button
+          onClick={() => setMobileNavOpen(false)}
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          aria-label="Close menu"
+        />
+      )}
+
+      {/* Sidebar / drawer */}
+      <aside
+        className={`fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 bg-white dark:bg-dark-card shadow-lg flex flex-col flex-shrink-0 transform transition-transform duration-200 md:translate-x-0 ${
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         {/* Logo */}
-        <div className="p-6 border-b dark:border-gray-700">
+        <div className="p-6 border-b dark:border-gray-700 hidden md:block">
           <Link href="/" className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/kc.gif" alt="KC" className="h-10 w-10 object-contain" />
@@ -67,6 +118,7 @@ export default function AdminLayout({
               <Link
                 key={href}
                 href={href}
+                onClick={handleNavClick}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   active
                     ? "bg-primary text-white shadow-md"
@@ -93,7 +145,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto p-8">{children}</main>
+      <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">{children}</main>
     </div>
   );
 }

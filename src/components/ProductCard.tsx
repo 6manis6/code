@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Product } from "@/types";
 import { useCart } from "@/contexts/CartContext";
 import toast from "react-hot-toast";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiTag } from "react-icons/fi";
 import Link from "next/link";
 
 interface ProductCardProps {
@@ -13,6 +12,12 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const originalPrice = product.originalPrice || product.price;
+  const hasDiscount = originalPrice > product.price;
+  const discountPercent =
+    hasDiscount && originalPrice > 0
+      ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
+      : 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -30,6 +35,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
+          {hasDiscount && (
+            <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-primary text-white text-xs font-bold px-2.5 py-1">
+              <FiTag className="w-3.5 h-3.5" /> {discountPercent}% OFF
+            </div>
+          )}
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <span className="text-white text-xl font-bold">Out of Stock</span>
@@ -44,17 +54,26 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
       <div className="p-4">
         <Link href={`/products/${product._id}`}>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 truncate hover:text-primary transition-colors">
+          <h3 className="text-lg font-bold tracking-wide text-gray-800 dark:text-white mb-1 truncate hover:text-primary transition-colors">
             {product.name}
           </h3>
         </Link>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4 line-clamp-2">
           {product.description}
         </p>
         <div className="flex justify-between items-center">
-          <span className="text-2xl font-bold text-primary">
-            NPR {product.price.toLocaleString('en-IN')}
-          </span>
+          <div className="flex flex-col">
+            {hasDiscount && (
+              <span className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-0.5">
+                <span className="line-through">
+                  NPR {originalPrice.toLocaleString("en-IN")}
+                </span>
+              </span>
+            )}
+            <span className="text-2xl font-extrabold tracking-tight text-primary leading-tight">
+              NPR {product.price.toLocaleString("en-IN")}
+            </span>
+          </div>
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0}
@@ -68,4 +87,3 @@ export default function ProductCard({ product }: ProductCardProps) {
     </div>
   );
 }
-

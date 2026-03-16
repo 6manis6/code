@@ -132,19 +132,19 @@ export default function AdminBanner() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-display tracking-widest font-bold dark:text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-display tracking-widest font-bold dark:text-white">
           BANNER
         </h1>
         <button
           onClick={handleAddSlide}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary inline-flex w-full sm:w-auto justify-center items-center gap-2"
         >
           <FiPlus /> Add Slide
         </button>
       </div>
 
-      <div className="bg-white dark:bg-dark-card rounded-xl shadow p-6">
+      <div className="bg-white dark:bg-dark-card rounded-xl shadow p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-1">
           <FiImage className="text-primary text-xl" />
           <h2 className="text-lg font-semibold dark:text-white">
@@ -194,7 +194,7 @@ export default function AdminBanner() {
                 className="border dark:border-gray-700 rounded-xl overflow-hidden"
               >
                 {/* Slide header */}
-                <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800">
+                <div className="flex items-center gap-2 sm:gap-3 p-3 bg-gray-50 dark:bg-gray-800">
                   <span className="text-sm font-bold text-gray-500 dark:text-gray-400 min-w-[28px]">
                     #{idx + 1}
                   </span>

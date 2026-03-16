@@ -14,6 +14,10 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
+    originalPrice: {
+      type: Number,
+      required: true,
+    },
     category: {
       type: String,
       enum: ["clothing", "figures", "accessories", "game"],
@@ -37,4 +41,8 @@ const ProductSchema = new Schema(
   },
 );
 
-export default models.Product || model("Product", ProductSchema);
+if (mongoose.models.Product) {
+  delete mongoose.models.Product;
+}
+
+export default model("Product", ProductSchema);

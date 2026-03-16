@@ -16,6 +16,7 @@ import {
   FiPlus,
   FiHeart,
   FiShare2,
+  FiTag,
 } from "react-icons/fi";
 import Link from "next/link";
 
@@ -96,6 +97,13 @@ export default function ProductDetailPage() {
 
   if (!product) return null;
 
+  const originalPrice = product.originalPrice || product.price;
+  const hasDiscount = originalPrice > product.price;
+  const discountPercent =
+    hasDiscount && originalPrice > 0
+      ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
+      : 0;
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg">
       <Header />
@@ -170,9 +178,19 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
-                <div className="text-3xl lg:text-4xl font-bold text-primary mb-2">
+                {hasDiscount && (
+                  <div className="inline-flex items-center gap-1 rounded-full bg-primary text-white text-xs font-bold px-3 py-1 mb-3">
+                    <FiTag className="w-3.5 h-3.5" /> {discountPercent}% OFF
+                  </div>
+                )}
+                <div className="text-3xl lg:text-4xl font-bold text-primary mb-1">
                   NPR {product.price.toLocaleString("en-IN")}
                 </div>
+                {hasDiscount && (
+                  <div className="text-base text-gray-500 dark:text-gray-400 line-through mb-2">
+                    NPR {originalPrice.toLocaleString("en-IN")}
+                  </div>
+                )}
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
                   Including VAT & Taxes
                 </p>

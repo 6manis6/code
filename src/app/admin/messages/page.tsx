@@ -51,7 +51,7 @@ export default function AdminMessages() {
 
   return (
     <div>
-      <h1 className="text-3xl font-display tracking-widest font-bold dark:text-white mb-8">
+      <h1 className="text-2xl sm:text-3xl font-display tracking-widest font-bold dark:text-white mb-6 sm:mb-8">
         MESSAGES
       </h1>
 
@@ -67,9 +67,9 @@ export default function AdminMessages() {
           {messages.map((msg) => (
             <div
               key={msg._id}
-              className="bg-white dark:bg-dark-card rounded-xl shadow p-6"
+              className="bg-white dark:bg-dark-card rounded-xl shadow p-4 sm:p-6"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="font-semibold text-lg dark:text-white">
@@ -90,7 +90,7 @@ export default function AdminMessages() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-auto">
                   <a
                     href={`mailto:${msg.email}?subject=Re: Your message to Kurama Anime Shop`}
                     className="text-sm bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary-dark transition-colors"

@@ -73,7 +73,7 @@ export default function AdminOrders() {
 
   return (
     <div>
-      <h1 className="text-3xl font-display tracking-widest font-bold dark:text-white mb-8">
+      <h1 className="text-2xl sm:text-3xl font-display tracking-widest font-bold dark:text-white mb-6 sm:mb-8">
         ORDERS
       </h1>
 
@@ -91,7 +91,7 @@ export default function AdminOrders() {
               key={order._id}
               className="bg-white dark:bg-dark-card rounded-xl shadow hover:shadow-md transition-shadow"
             >
-              <div className="flex flex-wrap justify-between items-start gap-4 p-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 p-4 sm:p-6">
                 {/* Customer info */}
                 <div>
                   <p className="font-semibold text-lg dark:text-white">
@@ -115,10 +115,10 @@ export default function AdminOrders() {
                 </div>
 
                 {/* Status + amount */}
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-col sm:items-end gap-2">
                   <button
                     onClick={() => handleDeleteOrder(order._id)}
-                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="self-start sm:self-auto p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                     title="Delete order"
                   >
                     <FiTrash2 className="w-4 h-4" />
@@ -148,7 +148,7 @@ export default function AdminOrders() {
               </div>
 
               {/* Items */}
-              <div className="border-t dark:border-gray-700 px-6 py-4">
+              <div className="border-t dark:border-gray-700 px-4 sm:px-6 py-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
                   Items
                 </p>

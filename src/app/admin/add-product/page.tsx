@@ -8,6 +8,7 @@ import { FiUpload, FiArrowLeft } from "react-icons/fi";
 import Link from "next/link";
 
 export default function AddProduct() {
+  const PRICE_MAX = 200000;
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -15,11 +16,47 @@ export default function AddProduct() {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    price: "",
+    originalPrice: "",
+    currentPrice: "",
     category: "figures",
     stock: "",
     featured: false,
   });
+
+  const originalPriceValue = Number(formData.originalPrice) || 0;
+  const currentPriceValue = Number(formData.currentPrice) || 0;
+  const discountPercent =
+    originalPriceValue > 0
+      ? Math.max(
+          0,
+          Math.round(
+            ((originalPriceValue - Math.min(currentPriceValue, originalPriceValue)) /
+              originalPriceValue) *
+              100,
+          ),
+        )
+      : 0;
+
+  const preventWheelChange = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.currentTarget.blur();
+  };
+
+  const preventArrowStep = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+    }
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    const target = e.target as HTMLInputElement;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    setFormData((prev) => ({ ...prev, [target.name]: value }));
+  };
 
   useEffect(() => {
     const isAuth = localStorage.getItem("adminAuth");
@@ -43,6 +80,11 @@ export default function AddProduct() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (currentPriceValue >= originalPriceValue) {
+      toast.error("Current price must be lower than original price");
+      return;
+    }
+
     if (!imageFile) {
       toast.error("Please select an image");
       return;
@@ -60,9 +102,13 @@ export default function AddProduct() {
 
       // Create product
       const productData = {
-        ...formData,
-        price: parseFloat(formData.price),
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.currentPrice),
+        originalPrice: parseFloat(formData.originalPrice),
+        category: formData.category,
         stock: parseInt(formData.stock),
+        featured: formData.featured,
         image: imageUrl,
       };
 
@@ -88,8 +134,8 @@ export default function AddProduct() {
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow">
-        <h1 className="text-3xl font-display tracking-widest font-bold mb-6 dark:text-white">
+      <div className="bg-white dark:bg-dark-card p-4 sm:p-8 rounded-xl shadow">
+        <h1 className="text-2xl sm:text-3xl font-display tracking-widest font-bold mb-6 dark:text-white">
           ADD PRODUCT
         </h1>
 
@@ -124,18 +170,20 @@ export default function AddProduct() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2 dark:text-gray-300">
-                Price (NPR)
+                Original Price (NPR)
               </label>
               <input
                 type="number"
+                name="originalPrice"
                 step="0.01"
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, price: e.target.value })
-                }
+                min="0"
+                value={formData.originalPrice}
+                onChange={handleInputChange}
+                onWheel={preventWheelChange}
+                onKeyDown={preventArrowStep}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 required
               />
@@ -151,9 +199,48 @@ export default function AddProduct() {
                 onChange={(e) =>
                   setFormData({ ...formData, stock: e.target.value })
                 }
+                min="0"
+                onWheel={preventWheelChange}
+                onKeyDown={preventArrowStep}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 required
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+              Current Price (NPR)
+            </label>
+            <input
+              type="number"
+              name="currentPrice"
+              step="0.01"
+              min="0"
+              value={formData.currentPrice}
+              onChange={handleInputChange}
+              onWheel={preventWheelChange}
+              onKeyDown={preventArrowStep}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+            <div className="mt-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-800/50">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Price Preview
+              </p>
+              <div className="flex items-baseline gap-3">
+                <span className="text-2xl font-bold text-primary">
+                  NPR {currentPriceValue.toLocaleString("en-IN")}
+                </span>
+                {originalPriceValue > currentPriceValue && (
+                  <span className="text-sm line-through text-gray-500 dark:text-gray-400">
+                    NPR {originalPriceValue.toLocaleString("en-IN")}
+                  </span>
+                )}
+                <span className="text-sm font-semibold text-primary">
+                  {discountPercent}% OFF
+                </span>
+              </div>
             </div>
           </div>
 
