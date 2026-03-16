@@ -41,6 +41,16 @@ function CartContent() {
       return;
     }
 
+    const overstockItem = cart.find(
+      (item) => item.quantity > Math.max(item.product.stock ?? 0, 0),
+    );
+    if (overstockItem) {
+      toast.error(
+        `${overstockItem.product.name} has only ${overstockItem.product.stock} left in stock.`,
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -79,7 +89,11 @@ function CartContent() {
       setWardNumber("");
       setChowk("");
     } catch (error) {
-      toast.error("Failed to place order");
+      const message =
+        axios.isAxiosError(error) && error.response?.data?.error
+          ? error.response.data.error
+          : "Failed to place order";
+      toast.error(message);
       console.error(error);
     } finally {
       setLoading(false);
@@ -136,9 +150,9 @@ function CartContent() {
                     </p>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() =>
-                          updateQuantity(item.product._id, item.quantity - 1)
-                        }
+                        onClick={() => {
+                          updateQuantity(item.product._id, item.quantity - 1);
+                        }}
                         className="p-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
                       >
                         <FiMinus />
@@ -147,8 +161,19 @@ function CartContent() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() =>
-                          updateQuantity(item.product._id, item.quantity + 1)
+                        onClick={() => {
+                          const updated = updateQuantity(
+                            item.product._id,
+                            item.quantity + 1,
+                          );
+                          if (!updated) {
+                            toast.error(
+                              `Only ${item.product.stock} ${item.product.stock === 1 ? "item" : "items"} available for ${item.product.name}.`,
+                            );
+                          }
+                        }}
+                        disabled={
+                          item.quantity >= Math.max(item.product.stock ?? 0, 0)
                         }
                         className="p-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
                       >

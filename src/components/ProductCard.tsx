@@ -24,14 +24,22 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    const added = addToCart(product);
+    if (!added) {
+      toast.error(`Only ${product.stock} in stock for ${product.name}.`);
+      return;
+    }
     toast.success(`${product.name} added to cart!`);
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    const added = addToCart(product);
+    if (!added) {
+      toast.error(`Only ${product.stock} in stock for ${product.name}.`);
+      return;
+    }
     router.push("/cart");
   };
 

@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
+
+type IncomingOrderItem = {
+  productId?: string;
+  quantity?: number;
+};
 
 function escapeHtml(input: string) {
   return input
@@ -44,8 +50,9 @@ export async function POST(request: NextRequest) {
     const city = body.city?.trim();
     const wardNumber = body.wardNumber?.trim();
     const chowk = body.chowk?.trim();
-    const items = Array.isArray(body.items) ? body.items : [];
-    const totalAmount = Number(body.totalAmount);
+    const incomingItems: IncomingOrderItem[] = Array.isArray(body.items)
+      ? body.items
+      : [];
 
     if (
       !customerName ||
@@ -55,13 +62,105 @@ export async function POST(request: NextRequest) {
       !city ||
       !wardNumber ||
       !chowk ||
-      items.length === 0
+      incomingItems.length === 0
     ) {
       return NextResponse.json(
         { success: false, error: "Missing required order fields" },
         { status: 400 },
       );
     }
+
+    const productQuantities = new Map<string, number>();
+
+    for (const item of incomingItems) {
+      const productId = item.productId?.trim();
+      const quantity = Number(item.quantity);
+
+      if (!productId || !Number.isInteger(quantity) || quantity <= 0) {
+        return NextResponse.json(
+          { success: false, error: "Invalid order items" },
+          { status: 400 },
+        );
+      }
+
+      productQuantities.set(
+        productId,
+        (productQuantities.get(productId) || 0) + quantity,
+      );
+    }
+
+    const productIds = Array.from(productQuantities.keys());
+    const products = await Product.find({ _id: { $in: productIds } }).lean();
+
+    if (products.length !== productIds.length) {
+      return NextResponse.json(
+        { success: false, error: "Some products are no longer available" },
+        { status: 400 },
+      );
+    }
+
+    const productsById = new Map(
+      products.map((product: any) => [String(product._id), product]),
+    );
+
+    for (const [productId, quantity] of productQuantities.entries()) {
+      const product = productsById.get(productId);
+      if (!product || Number(product.stock) < quantity) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `${product?.name || "Product"} has only ${Math.max(Number(product?.stock || 0), 0)} left in stock`,
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    const decrementedProducts: Array<{ productId: string; quantity: number }> =
+      [];
+
+    for (const [productId, quantity] of productQuantities.entries()) {
+      const updatedProduct = await Product.findOneAndUpdate(
+        { _id: productId, stock: { $gte: quantity } },
+        { $inc: { stock: -quantity } },
+        { new: true },
+      );
+
+      if (!updatedProduct) {
+        for (const decremented of decrementedProducts) {
+          await Product.findByIdAndUpdate(decremented.productId, {
+            $inc: { stock: decremented.quantity },
+          });
+        }
+
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Stock changed while placing your order. Please review your cart and try again.",
+          },
+          { status: 409 },
+        );
+      }
+
+      decrementedProducts.push({ productId, quantity });
+    }
+
+    const orderItems = incomingItems.map((item) => {
+      const product = productsById.get(String(item.productId)) as any;
+      return {
+        productId: String(product._id),
+        productName: product.name,
+        productImage: product.image,
+        quantity: Number(item.quantity),
+        price: Number(product.price),
+      };
+    });
+
+    const totalAmount = orderItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0,
+    );
 
     const order = await Order.create({
       customerName,
@@ -71,7 +170,7 @@ export async function POST(request: NextRequest) {
       city,
       wardNumber,
       chowk,
-      items,
+      items: orderItems,
       totalAmount,
       status: body.status || "pending",
     });
@@ -95,14 +194,14 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      const orderItemsText = items
+      const orderItemsText = orderItems
         .map(
           (item: any) =>
             `- ${item.productName} x ${item.quantity} = ${formatCurrency(Number(item.price) * Number(item.quantity))}`,
         )
         .join("\n");
 
-      const orderItemsHtml = items
+      const orderItemsHtml = orderItems
         .map(
           (item: any) =>
             `<li>${escapeHtml(item.productName)} x ${item.quantity} = ${escapeHtml(formatCurrency(Number(item.price) * Number(item.quantity)))}</li>`,

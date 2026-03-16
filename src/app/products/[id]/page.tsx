@@ -70,14 +70,22 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (product) {
-      addToCart(product, quantity);
+      const added = addToCart(product, quantity);
+      if (!added) {
+        toast.error(`Only ${product.stock} in stock for ${product.name}.`);
+        return;
+      }
       toast.success(`${product.name} added to cart!`);
     }
   };
 
   const handleBuyNow = () => {
     if (!product) return;
-    addToCart(product, quantity);
+    const added = addToCart(product, quantity);
+    if (!added) {
+      toast.error(`Only ${product.stock} in stock for ${product.name}.`);
+      return;
+    }
     router.push("/cart?checkout=1");
   };
 
