@@ -15,6 +15,11 @@ export interface Order {
   _id: string;
   customerName: string;
   customerPhone: string;
+  customerEmail: string;
+  district: string;
+  city: string;
+  wardNumber: string;
+  chowk: string;
   items: OrderItem[];
   totalAmount: number;
   status: "pending" | "processing" | "completed" | "cancelled";

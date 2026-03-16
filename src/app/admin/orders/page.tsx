@@ -100,11 +100,13 @@ export default function AdminOrders() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {order.customerPhone}
                   </p>
-                  {order.customerAddress && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {order.customerAddress}
-                    </p>
-                  )}
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {order.customerEmail}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    {order.chowk}, Ward {order.wardNumber}, {order.city},{" "}
+                    {order.district}
+                  </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
                     {new Date(order.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",

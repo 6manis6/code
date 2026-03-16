@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi";
-import { FaWhatsapp } from "react-icons/fa";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -18,8 +17,23 @@ function CartContent() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [district, setDistrict] = useState("");
+  const [city, setCity] = useState("");
+  const [wardNumber, setWardNumber] = useState("");
+  const [chowk, setChowk] = useState("");
+  const [orderPlacedMessage, setOrderPlacedMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const shouldOpenCheckout = searchParams.get("checkout") === "1";
+
+  useEffect(() => {
+    if (shouldOpenCheckout) {
+      setShowCheckout(true);
+    }
+  }, [shouldOpenCheckout]);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +49,11 @@ function CartContent() {
       const orderData = {
         customerName,
         customerPhone,
+        customerEmail,
+        district,
+        city,
+        wardNumber,
+        chowk,
         items: cart.map((item) => ({
           productId: item.product._id,
           productName: item.product.name,
@@ -48,32 +67,19 @@ function CartContent() {
 
       await axios.post("/api/orders", orderData);
 
-      // Build WhatsApp message
-      const lines = [
-        `*New Order - Kurama Collections*`,
-        ``,
-        `Name: ${customerName}`,
-        `Phone: ${customerPhone}`,
-        ``,
-        `*Items:*`,
-        ...cart.map(
-          (item) =>
-            `- ${item.product.name} x ${item.quantity} - NPR ${(item.product.price * item.quantity).toLocaleString("en-IN")}`,
-        ),
-        ``,
-        `*Total: NPR ${getTotalPrice().toLocaleString("en-IN")}*`,
-        ``,
-        `Please confirm my order. Thank you!`,
-      ];
-      const message = encodeURIComponent(lines.join("\n"));
-      window.open(`https://wa.me/9779815914361?text=${message}`, "_blank");
-
-      toast.success("Order placed! Opening WhatsApp…");
+      toast.success("Order placed successfully!");
+      setOrderPlacedMessage(
+        "Order placed successfully. We will contact you soon.",
+      );
       clearCart();
       setShowCheckout(false);
       setCustomerName("");
       setCustomerPhone("");
-      router.push("/");
+      setCustomerEmail("");
+      setDistrict("");
+      setCity("");
+      setWardNumber("");
+      setChowk("");
     } catch (error) {
       toast.error("Failed to place order");
       console.error(error);
@@ -90,6 +96,12 @@ function CartContent() {
         <h1 className="text-4xl font-bold mb-8 dark:text-white">
           Shopping Cart
         </h1>
+
+        {orderPlacedMessage && (
+          <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700 dark:border-green-900/40 dark:bg-green-900/20 dark:text-green-300">
+            {orderPlacedMessage}
+          </div>
+        )}
 
         {cart.length === 0 ? (
           <div className="text-center py-12">
@@ -222,13 +234,72 @@ function CartContent() {
                         required
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                        District
+                      </label>
+                      <input
+                        type="text"
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                        Ward Number
+                      </label>
+                      <input
+                        type="text"
+                        value={wardNumber}
+                        onChange={(e) => setWardNumber(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                        Chowk
+                      </label>
+                      <input
+                        type="text"
+                        value={chowk}
+                        onChange={(e) => setChowk(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
+                    </div>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
                     >
-                      <FaWhatsapp className="w-5 h-5" />
-                      {loading ? "Placing Order..." : "Order via WhatsApp"}
+                      {loading ? "Placing Order..." : "Place Order"}
                     </button>
                     <button
                       type="button"

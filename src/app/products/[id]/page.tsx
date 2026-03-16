@@ -75,6 +75,12 @@ export default function ProductDetailPage() {
     }
   };
 
+  const handleBuyNow = () => {
+    if (!product) return;
+    addToCart(product, quantity);
+    router.push("/cart?checkout=1");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg">
@@ -242,6 +248,7 @@ export default function ProductDetailPage() {
                     Add to Cart
                   </button>
                   <button
+                    onClick={handleBuyNow}
                     disabled={product.stock === 0}
                     className="sm:w-1/3 py-4 border-2 border-primary text-primary font-bold rounded-2xl hover:bg-primary hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >

@@ -34,6 +34,26 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    customerEmail: {
+      type: String,
+      required: true,
+    },
+    district: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    wardNumber: {
+      type: String,
+      required: true,
+    },
+    chowk: {
+      type: String,
+      required: true,
+    },
     items: [OrderItemSchema],
     totalAmount: {
       type: Number,
