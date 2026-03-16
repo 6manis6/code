@@ -50,7 +50,7 @@ function CartContent() {
 
       // Build WhatsApp message
       const lines = [
-        `*New Order - Kurama Collectibles*`,
+        `*New Order - Kurama Collections*`,
         ``,
         `Name: ${customerName}`,
         `Phone: ${customerPhone}`,

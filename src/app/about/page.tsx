@@ -15,9 +15,9 @@ export default function About() {
 
         <div className="prose dark:prose-invert max-w-none">
           <p className="text-lg dark:text-gray-300 mb-4">
-            Welcome to Kurama Collectibles, your ultimate destination for anime
+            Welcome to Kurama Collections, your ultimate destination for anime
             merchandise, figures, clothing, and accessories. We&apos;re
-            passionate about bringing you the best collectibles from your
+            passionate about bringing you the best collections from your
             favorite anime series.
           </p>
 

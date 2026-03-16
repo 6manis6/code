@@ -14,7 +14,7 @@ export default function Footer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/kc.png"
-                alt="Kurama Collectibles"
+                alt="Kurama Collections"
                 className="h-32 w-32 rounded-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </Link>
@@ -111,7 +111,7 @@ export default function Footer() {
             </cite>
           </div>
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Kurama Collectibles. All rights
+            &copy; {new Date().getFullYear()} Kurama Collections. All rights
             reserved.
           </p>
         </div>

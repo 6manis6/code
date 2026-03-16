@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { CartProvider } from "@/contexts/CartContext";
 
 export const metadata: Metadata = {
-  title: "Kurama Collectibles - Anime Merchandise Store",
+  title: "Kurama Collections - Anime Merchandise Store",
   description:
     "Your one-stop shop for anime figures, clothing, and accessories",
 };
