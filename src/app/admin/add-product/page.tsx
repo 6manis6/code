@@ -30,7 +30,8 @@ export default function AddProduct() {
       ? Math.max(
           0,
           Math.round(
-            ((originalPriceValue - Math.min(currentPriceValue, originalPriceValue)) /
+            ((originalPriceValue -
+              Math.min(currentPriceValue, originalPriceValue)) /
               originalPriceValue) *
               100,
           ),

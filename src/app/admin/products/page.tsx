@@ -67,7 +67,8 @@ export default function AdminProducts() {
           Math.min(
             100,
             Math.round(
-              ((editOriginalPrice - editCurrentPrice) / editOriginalPrice) * 100,
+              ((editOriginalPrice - editCurrentPrice) / editOriginalPrice) *
+                100,
             ),
           ),
         )
