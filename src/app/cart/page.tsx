@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -25,15 +25,13 @@ function CartContent() {
   const [orderPlacedMessage, setOrderPlacedMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const shouldOpenCheckout = searchParams.get("checkout") === "1";
 
   useEffect(() => {
-    if (shouldOpenCheckout) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "1") {
       setShowCheckout(true);
     }
-  }, [shouldOpenCheckout]);
+  }, []);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
