@@ -63,6 +63,15 @@ Before you begin, ensure you have the following installed:
    # ImgBB API Key (Get from https://api.imgbb.com/)
    IMGBB_API_KEY=your_imgbb_api_key_here
 
+   # Contact form email forwarding (Gmail SMTP)
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   SMTP_USER=your_gmail_address@gmail.com
+   SMTP_PASS=your_gmail_app_password
+   CONTACT_RECEIVER_EMAIL=your_gmail_address@gmail.com
+   CONTACT_FROM_EMAIL=your_gmail_address@gmail.com
+
    # Admin Credentials
    ADMIN_USERNAME=admin
    ADMIN_PASSWORD=admin123
@@ -82,6 +91,12 @@ Before you begin, ensure you have the following installed:
    - Sign up at [ImgBB](https://imgbb.com/)
    - Go to [API page](https://api.imgbb.com/) and get your API key
    - Add it to `.env.local`
+
+6. **Configure Gmail forwarding for contact form**
+   - Enable 2-Step Verification on your Google account
+   - Create an App Password in Google Account security settings
+   - Use that App Password as `SMTP_PASS` (not your normal Gmail password)
+   - Keep `SMTP_USER`, `CONTACT_RECEIVER_EMAIL`, and `CONTACT_FROM_EMAIL` as your Gmail address
 
 ## Running the Application
 

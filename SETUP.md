@@ -29,13 +29,28 @@ Open `.env.local` and update:
 ```env
 MONGODB_URI=your_mongodb_connection_string_from_step_1
 IMGBB_API_KEY=your_api_key_from_step_2
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_gmail_address@gmail.com
+SMTP_PASS=your_gmail_app_password
+CONTACT_RECEIVER_EMAIL=your_gmail_address@gmail.com
+CONTACT_FROM_EMAIL=your_gmail_address@gmail.com
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin123
 NEXT_PUBLIC_ADMIN_USERNAME=admin
 NEXT_PUBLIC_ADMIN_PASSWORD=admin123
 ```
 
-## Step 4: Install and Run
+## Step 4: Gmail App Password (for Contact Form Emails)
+
+1. Open your Google Account security settings
+2. Enable 2-Step Verification (required)
+3. Create an App Password for Mail
+4. Use this App Password as `SMTP_PASS` in `.env.local`
+5. Do not use your normal Gmail password in `SMTP_PASS`
+
+## Step 5: Install and Run
 
 ```bash
 # Install dependencies
@@ -45,7 +60,7 @@ npm install
 npm run dev
 ```
 
-## Step 5: Access Your Site
+## Step 6: Access Your Site
 
 - **Homepage**: http://localhost:3000
 - **Admin Panel**: http://localhost:3000/admin
