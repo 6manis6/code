@@ -34,10 +34,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/collections?featured=true"
+                  href="/collections"
                   className="text-gray-400 hover:text-primary transition-colors"
                 >
-                  Best Sellers
+                  Popular Products
                 </Link>
               </li>
               <li>

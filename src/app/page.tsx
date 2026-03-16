@@ -37,7 +37,6 @@ const DEFAULT_SLIDE: BannerSlide = {
 };
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,9 +108,6 @@ export default function Home() {
       const products = res.data.data;
 
       setAllProducts(products);
-      setFeaturedProducts(
-        products.filter((p: Product) => p.featured).slice(0, 6),
-      );
       setNewArrivals(products.slice(0, 8));
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -310,80 +306,6 @@ export default function Home() {
           </section>
         )}
 
-        {/* Featured Categories */}
-        <section
-          className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 ${isSearching ? "hidden" : ""}`}
-        >
-          <h2 className="text-3xl font-display font-bold text-center mb-4 dark:text-white tracking-widest">
-            FEATURED <span className="text-primary">CATEGORIES</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-            <Link href="/collections?category=clothing">
-              <div className="relative h-64 rounded-lg overflow-hidden group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 group-hover:opacity-75 transition-opacity"></div>
-                <img
-                  src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500"
-                  alt="Clothing"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-white text-2xl font-display tracking-widest">
-                    CLOTHING
-                  </h3>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/collections?category=figures">
-              <div className="relative h-64 rounded-lg overflow-hidden group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 group-hover:opacity-75 transition-opacity"></div>
-                <img
-                  src="https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=500"
-                  alt="Figures"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-white text-2xl font-display tracking-widest">
-                    FIGURES
-                  </h3>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/collections?category=accessories">
-              <div className="relative h-64 rounded-lg overflow-hidden group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 group-hover:opacity-75 transition-opacity"></div>
-                <img
-                  src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500"
-                  alt="Accessories"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-white text-2xl font-display tracking-widest">
-                    ACCESSORIES
-                  </h3>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/collections?category=game">
-              <div className="relative h-64 rounded-lg overflow-hidden group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 group-hover:opacity-75 transition-opacity"></div>
-                <img
-                  src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=500"
-                  alt="Games"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-white text-2xl font-display tracking-widest">
-                    GAMES
-                  </h3>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </section>
-
         {/* New Arrivals */}
         <section
           className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 ${isSearching ? "hidden" : ""}`}
@@ -420,29 +342,6 @@ export default function Home() {
             </div>
           )}
         </section>
-
-        {/* Most Viewed Products */}
-        {featuredProducts.length > 0 && !isSearching && (
-          <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-display font-bold dark:text-white tracking-widest">
-                MOST VIEWED <span className="text-primary">PRODUCTS</span>
-              </h2>
-              <Link
-                href="/collections?featured=true"
-                className="text-primary hover:text-primary-dark font-semibold"
-              >
-                View All →
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
-          </section>
-        )}
       </main>
 
       <Footer />
