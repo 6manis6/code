@@ -103,7 +103,9 @@ export async function POST(request: NextRequest) {
       products.map((product: any) => [String(product._id), product]),
     );
 
-    for (const [productId, quantity] of productQuantities.entries()) {
+    for (const [productId, quantity] of Array.from(
+      productQuantities.entries(),
+    )) {
       const product = productsById.get(productId);
       if (!product || Number(product.stock) < quantity) {
         return NextResponse.json(
@@ -119,7 +121,9 @@ export async function POST(request: NextRequest) {
     const decrementedProducts: Array<{ productId: string; quantity: number }> =
       [];
 
-    for (const [productId, quantity] of productQuantities.entries()) {
+    for (const [productId, quantity] of Array.from(
+      productQuantities.entries(),
+    )) {
       const updatedProduct = await Product.findOneAndUpdate(
         { _id: productId, stock: { $gte: quantity } },
         { $inc: { stock: -quantity } },
